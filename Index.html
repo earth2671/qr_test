@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>QR Scanner Test</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- QR Scanner -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>📷 QR Scanner</h1>
+
+    <p class="subtitle">
+      ทดลองสแกน QR Code
+    </p>
+
+    <!-- Scanner -->
+    <div id="reader"></div>
+
+    <!-- Result -->
+    <div class="result-box">
+
+      <div class="result-title">
+        ผลการสแกน
+      </div>
+
+      <div id="result">
+        ยังไม่ได้สแกน
+      </div>
+
+    </div>
+
+    <button id="scanAgainBtn">
+      🔄 สแกนอีกครั้ง
+    </button>
+
+  </div>
+
+  <script src="app.js"></script>
+
+</body>
+
+</html>
