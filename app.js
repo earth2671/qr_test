@@ -51,13 +51,13 @@ function startScanner() {
     document.getElementById("result").textContent =
       "กำลังสแกน...";
 
-    console.log("Camera started");
+    console.log("📷 Camera started");
 
   })
   .catch(error => {
 
     console.error(
-      "Camera error:",
+      "❌ Camera error:",
       error
     );
 
@@ -74,33 +74,52 @@ function startScanner() {
 
 
 // ========================================
-// เมื่ออ่าน QR สำเร็จ
+// QR Scan สำเร็จ
 // ========================================
 
 function onScanSuccess(decodedText, decodedResult) {
 
+  // ป้องกัน Scan ซ้ำ
   if (scanLocked) {
     return;
   }
 
   scanLocked = true;
 
-  console.log("QR Code:", decodedText);
+
+  console.log(
+    "📷 QR Code:",
+    decodedText
+  );
+
 
   document.getElementById("result").textContent =
     "สแกนสำเร็จ: " + decodedText;
 
 
   // =====================================
-  // ตรวจสอบว่ามีหน้าหลักที่เปิด Scanner หรือไม่
+  // ตรวจสอบ Dashboard
   // =====================================
 
-  console.log("window.opener =", window.opener);
+  console.log(
+    "window.opener =",
+    window.opener
+  );
 
 
-  if (window.opener && !window.opener.closed) {
+  if (
+    window.opener &&
+    !window.opener.closed
+  ) {
 
-    console.log("กำลังส่งข้อมูลกลับ Dashboard...");
+    console.log(
+      "📤 กำลังส่งข้อมูลกลับ Dashboard..."
+    );
+
+
+    // ===================================
+    // ส่ง HN กลับ Dashboard
+    // ===================================
 
     window.opener.postMessage(
       {
@@ -110,21 +129,32 @@ function onScanSuccess(decodedText, decodedResult) {
       "*"
     );
 
-    console.log("ส่งข้อมูลกลับแล้ว");
+
+    console.log(
+      "✅ ส่งข้อมูลกลับ Dashboard แล้ว"
+    );
 
 
-    // หยุดกล้องก่อน
+    // ===================================
+    // หยุดกล้อง
+    // ===================================
 
     stopScanner();
 
-
-    // แจ้งผู้ใช้ก่อนปิด
 
     document.getElementById("result").textContent =
       "✅ ส่งข้อมูลกลับ Dashboard แล้ว";
 
 
-    setTimeout(function () {
+    // ===================================
+    // ปิดหน้าต่าง Scanner
+    // ===================================
+
+    setTimeout(() => {
+
+      console.log(
+        "กำลังปิด Scanner..."
+      );
 
       window.close();
 
@@ -133,24 +163,33 @@ function onScanSuccess(decodedText, decodedResult) {
 
   } else {
 
+    // ===================================
+    // ไม่มี Dashboard
+    // ===================================
+
     console.error(
-      "ไม่พบ window.opener"
+      "❌ ไม่พบ window.opener"
     );
+
 
     document.getElementById("result").textContent =
       "❌ ไม่พบหน้า Dashboard ที่เปิด Scanner";
 
+
     stopScanner();
 
   }
+
 }
+
+
+// ========================================
+// QR ยังไม่ถูกพบ
+// ========================================
 
 function onScanFailure(errorMessage) {
 
   // ไม่ต้องทำอะไร
-  //
-  // function นี้จะถูกเรียกบ่อยมาก
-  // ขณะที่กล้องกำลังหา QR
 }
 
 
@@ -161,11 +200,11 @@ function onScanFailure(errorMessage) {
 function stopScanner() {
 
   if (!scanner || !scanning) {
-    return;
+    return Promise.resolve();
   }
 
 
-  scanner.stop()
+  return scanner.stop()
 
     .then(() => {
 
@@ -174,7 +213,7 @@ function stopScanner() {
       scanning = false;
 
       console.log(
-        "Camera stopped"
+        "🛑 Camera stopped"
       );
 
     })
@@ -182,35 +221,40 @@ function stopScanner() {
     .catch(error => {
 
       console.error(
-        "Stop camera error:",
+        "❌ Stop camera error:",
         error
       );
+
+      scanning = false;
 
     });
 }
 
 
 // ========================================
-// ปุ่มสแกนใหม่
+// ปุ่ม Scan อีกครั้ง
 // ========================================
 
 document
   .getElementById("scanAgainBtn")
-  .addEventListener("click", () => {
+  .addEventListener(
+    "click",
+    async () => {
 
-    stopScanner();
+      await stopScanner();
 
-    setTimeout(() => {
+      setTimeout(() => {
 
-      startScanner();
+        startScanner();
 
-    }, 300);
+      }, 300);
 
-  });
+    }
+  );
 
 
 // ========================================
-// เริ่มกล้องเมื่อเปิดหน้า
+// เริ่มกล้องตอนเปิดหน้า
 // ========================================
 
 window.addEventListener(
