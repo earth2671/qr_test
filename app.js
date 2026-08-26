@@ -92,21 +92,45 @@ function onScanSuccess(decodedText, decodedResult) {
   );
 
 
-  // แสดงค่าที่อ่านได้
+  document.getElementById(
+    "result"
+  ).textContent = decodedText;
 
-  document.getElementById("result").textContent =
-    decodedText;
+
+  // =====================================
+  // ส่งข้อมูลกลับ Apps Script Dashboard
+  // =====================================
+
+  if (window.opener) {
+
+    window.opener.postMessage(
+
+      {
+        type: "QR_SCANNED",
+
+        hn: decodedText
+      },
+
+      "https://script.google.com"
+    );
+
+  }
 
 
   // หยุดกล้อง
 
   stopScanner();
+
+
+  // รอเล็กน้อยแล้วปิดหน้าสแกน
+
+  setTimeout(function() {
+
+    window.close();
+
+  }, 500);
+
 }
-
-
-// ========================================
-// ตอนยังหา QR ไม่เจอ
-// ========================================
 
 function onScanFailure(errorMessage) {
 
