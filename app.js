@@ -85,51 +85,64 @@ function onScanSuccess(decodedText, decodedResult) {
 
   scanLocked = true;
 
+  console.log("QR Code:", decodedText);
 
-  console.log(
-    "QR Code:",
-    decodedText
-  );
-
-
-  document.getElementById(
-    "result"
-  ).textContent = decodedText;
+  document.getElementById("result").textContent =
+    "สแกนสำเร็จ: " + decodedText;
 
 
   // =====================================
-  // ส่งข้อมูลกลับ Apps Script Dashboard
+  // ตรวจสอบว่ามีหน้าหลักที่เปิด Scanner หรือไม่
   // =====================================
 
-  if (window.opener) {
+  console.log("window.opener =", window.opener);
+
+
+  if (window.opener && !window.opener.closed) {
+
+    console.log("กำลังส่งข้อมูลกลับ Dashboard...");
 
     window.opener.postMessage(
-
       {
         type: "QR_SCANNED",
-
         hn: decodedText
       },
-
-      "https://script.google.com"
+      "*"
     );
 
+    console.log("ส่งข้อมูลกลับแล้ว");
+
+
+    // หยุดกล้องก่อน
+
+    stopScanner();
+
+
+    // แจ้งผู้ใช้ก่อนปิด
+
+    document.getElementById("result").textContent =
+      "✅ ส่งข้อมูลกลับ Dashboard แล้ว";
+
+
+    setTimeout(function () {
+
+      window.close();
+
+    }, 1000);
+
+
+  } else {
+
+    console.error(
+      "ไม่พบ window.opener"
+    );
+
+    document.getElementById("result").textContent =
+      "❌ ไม่พบหน้า Dashboard ที่เปิด Scanner";
+
+    stopScanner();
+
   }
-
-
-  // หยุดกล้อง
-
-  stopScanner();
-
-
-  // รอเล็กน้อยแล้วปิดหน้าสแกน
-
-  setTimeout(function() {
-
-    window.close();
-
-  }, 500);
-
 }
 
 function onScanFailure(errorMessage) {
